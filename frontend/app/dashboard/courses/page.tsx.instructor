@@ -1,0 +1,105 @@
+"use client"
+
+import { Card } from "@/components/ui/card"
+import { Button } from "@/components/ui/button"
+import Link from "next/link"
+import { useAuth } from "@/lib/auth-context"
+
+const INSTRUCTOR_COURSES = [
+  {
+    id: 1,
+    title: "Advanced React Patterns",
+    students: 145,
+    rating: 4.9,
+    revenue: 2890,
+    status: "Published",
+  },
+  {
+    id: 2,
+    title: "Node.js REST APIs",
+    students: 89,
+    rating: 4.7,
+    revenue: 1780,
+    status: "Published",
+  },
+  {
+    id: 3,
+    title: "TypeScript Mastery",
+    students: 0,
+    rating: 0,
+    revenue: 0,
+    status: "Draft",
+  },
+]
+
+export default function InstructorCoursesPage() {
+  const { user } = useAuth()
+
+  if (user?.role !== "instructor") {
+    return (
+      <div className="flex items-center justify-center h-screen">
+        <Card className="p-6">
+          <p className="text-foreground">You don't have permission to access this page.</p>
+        </Card>
+      </div>
+    )
+  }
+
+  return (
+    <div className="space-y-6">
+      <div className="flex justify-between items-start">
+        <div>
+          <h2 className="text-3xl font-bold text-foreground">My Courses</h2>
+          <p className="text-muted-foreground mt-1">Manage and track your courses</p>
+        </div>
+        <Link href="/dashboard/create-course">
+          <Button>Create New Course</Button>
+        </Link>
+      </div>
+
+      <div className="space-y-3">
+        {INSTRUCTOR_COURSES.map((course) => (
+          <Card key={course.id} className="p-6">
+            <div className="flex items-center justify-between mb-4">
+              <div className="flex-1">
+                <h3 className="text-lg font-semibold text-foreground">{course.title}</h3>
+                <div className="flex gap-4 mt-2 text-sm text-muted-foreground">
+                  <span>👥 {course.students} students</span>
+                  <span>⭐ {course.rating}</span>
+                  <span
+                    className={`px-2 py-1 rounded-full text-xs font-medium ${
+                      course.status === "Published"
+                        ? "bg-accent/20 text-accent"
+                        : "bg-muted text-muted-foreground"
+                    }`}
+                  >
+                    {course.status}
+                  </span>
+                </div>
+              </div>
+              <div className="text-right">
+                {course.revenue > 0 && (
+                  <div>
+                    <p className="text-sm text-muted-foreground">Revenue</p>
+                    <p className="text-2xl font-bold text-accent">${course.revenue}</p>
+                  </div>
+                )}
+              </div>
+            </div>
+            <div className="flex gap-3">
+              <Button variant="outline" className="bg-transparent">
+                Edit
+              </Button>
+              <Button variant="outline" className="bg-transparent">
+                Analytics
+              </Button>
+              <Button variant="outline" className="bg-transparent">
+                Preview
+              </Button>
+            </div>
+          </Card>
+        ))}
+      </div>
+    </div>
+  )
+}
